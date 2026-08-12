@@ -1,0 +1,8 @@
+{
+  "name": "予定ナビ Ver.1.2",
+  "short_name": "予定ナビ",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ea",
+  "theme_color": "#f7f4ea"
+}
