@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fffaf0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="予定ナビ">
+<title>予定ナビ Ver.2.2 完成版</title>
+<style>
+:root{
+  --bg:#fffaf0; --panel:#fffdf8; --ink:#315648; --cream:#f1dfb7; --cream2:#f8efe0;
+  --line:#eadfce; --muted:#b9b5ae; --blue:#6f95c9; --red:#d97070; --orange:#d99a56;
+  --peach:#e7bea0; --mint:#eef7f4; --shadow:0 6px 20px rgba(90,72,42,.07)
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:760px;margin:auto;padding:14px 16px 116px}
+.header{display:grid;grid-template-columns:54px 1fr 54px;align-items:center;gap:10px}
+.icon{width:54px;height:54px;border:1px solid var(--line);border-radius:17px;background:var(--panel);font-size:25px;color:var(--ink);box-shadow:var(--shadow)}
+.brand{text-align:center}.brand h1{margin:0;font-size:31px;line-height:1.05}.brand .ver{font-size:16px;font-weight:800;margin-top:5px;color:#7f948b}
+.dateRow{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 7px}
+.dateBig{font-size:28px;font-weight:900;display:flex;align-items:center;gap:9px}.today{border:0;border-radius:24px;background:#e7d3a2;color:#5e5035;padding:10px 17px;font-weight:900}
+.greeting{text-align:center;font-size:14px;color:#77766f;margin-bottom:13px}
+.weekwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.weekwrap::-webkit-scrollbar{display:none}
+.week{display:flex;gap:7px;min-width:max-content;padding:2px 1px 8px}
+.day{width:64px;border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:8px 4px;text-align:center;color:#374741;box-shadow:0 2px 8px rgba(90,72,42,.03)}
+.day .dow{font-size:12px;font-weight:800}.day strong{display:block;font-size:21px;line-height:1.1;margin-top:2px}.day small{display:block;font-size:10px;min-height:12px;margin-top:2px}
+.day.active{background:var(--cream);border-color:#dec28b;color:#5f5137}.day.sat:not(.active){color:var(--blue)}.day.sun:not(.active){color:var(--red)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:19px;padding:15px;margin-top:12px;box-shadow:var(--shadow)}
+.cardtitle{display:flex;justify-content:space-between;align-items:center;font-size:19px;font-weight:900;margin-bottom:10px}.smallbtn{border:1px solid var(--line);border-radius:12px;background:#fff7e8;color:#6b624f;padding:8px 11px;font-weight:800}
+.timepicker{display:grid;grid-template-columns:1fr 28px 1fr;align-items:center;max-width:340px;margin:auto}.timecol{text-align:center}.arrow{border:0;background:transparent;color:var(--ink);font-size:31px;padding:1px 18px}.ghost{color:var(--muted);font-weight:700;font-size:18px;line-height:1.25}
+.timevalue{display:inline-block;min-width:105px;background:var(--cream2);border-radius:14px;padding:8px 12px;font-size:40px;font-weight:900;color:var(--ink);margin:5px 0}.colon{font-size:36px;font-weight:900;text-align:center}
+.fieldhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}.label{font-size:19px;font-weight:900}.voice{border:1px solid var(--line);border-radius:12px;background:var(--mint);color:#64877d;padding:8px 11px;font-weight:800}
+.textinput{width:100%;border:1px solid var(--line);border-radius:13px;background:white;padding:13px 14px;font-size:19px}
+.setting{display:grid;grid-template-columns:1fr auto;align-items:center;padding:13px 2px;border-bottom:1px solid #efe7db}.setting:last-child{border-bottom:0}.setting .left{font-size:17px;font-weight:800}.setting select{border:0;background:transparent;color:#374741;font-weight:800;text-align:right}
+.memoarea{width:100%;border:1px solid var(--line);border-radius:13px;padding:11px;background:white;min-height:78px;margin-top:8px}.register{width:100%;border:0;border-radius:15px;padding:16px;background:#7da194;color:white;font-size:19px;font-weight:900;margin-top:13px;box-shadow:0 7px 18px rgba(84,125,111,.16)}
+.cancel{width:100%;border:1px solid var(--line);border-radius:15px;padding:13px;background:#fff7e8;color:#796e5d;font-size:17px;font-weight:800;margin-top:9px}.notice{margin-top:10px;border-radius:14px;padding:12px 13px;font-weight:900}.notice.orange{background:#fff0d6;border:1px solid #e8c28b;color:#8d6228}.notice.red{background:#fde3df;border:1px solid #e7aaa2;color:#a44e4c}
+.event{border:1px solid var(--line);border-radius:14px;background:white;padding:12px;margin-top:9px}.evtime{font-size:21px;font-weight:900}.evtext{font-size:17px;font-weight:800;margin-top:2px}.evmeta{font-size:12px;color:#918b83;margin-top:4px}.actions{display:flex;gap:7px;margin-top:8px}.mini{border:1px solid var(--line);border-radius:9px;background:#fffaf1;padding:7px 9px}
+.hidden{display:none!important}.bottom{position:fixed;left:0;right:0;bottom:0;background:rgba(255,253,248,.97);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:end;padding:8px 3px calc(8px + env(safe-area-inset-bottom));z-index:20}.nav{border:0;background:transparent;color:#777166;font-size:11px;min-width:62px}.nav span{display:block;font-size:23px;margin-bottom:2px}.nav.active{color:var(--ink);font-weight:900}.fab{width:62px;height:62px;border:0;border-radius:50%;background:var(--peach);color:#654c36;font-size:36px;margin-top:-29px;box-shadow:0 7px 18px rgba(194,144,107,.22)}
+.viewtitle{font-size:21px;font-weight:900}.empty{color:#99958e;padding:12px 3px}.calendargrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}.calcell{aspect-ratio:1;border:1px solid var(--line);border-radius:9px;background:white;color:#374741;position:relative}.calcell.today{outline:2px solid #dfbf84}.calcell.sel{background:#f7ead0}.dot{width:6px;height:6px;border-radius:50%;background:#d97070;position:absolute;right:5px;bottom:5px}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="header">
+  <button class="icon" id="menuBtn" type="button">☰</button>
+  <div class="brand"><h1>予定ナビ</h1><div class="ver">Ver.2.2 完成版</div></div>
+  <button class="icon" id="settingsBtn" type="button">⚙︎</button>
+</header>
+
+<div class="dateRow">
+  <div class="dateBig"><span>▣</span><span id="dateBig"></span></div>
+  <button class="today" id="todayBtn" type="button">今日</button>
+</div>
+<div class="greeting" id="greeting"></div>
+<div class="weekwrap"><div class="week" id="week"></div></div>
+
+<section id="addView">
+  <div class="card">
+    <div class="cardtitle"><span>◷ 時間を選択</span><button class="smallbtn" id="nowBtn" type="button">◷ 現在時刻</button></div>
+    <div class="timepicker">
+      <div class="timecol">
+        <button class="arrow" id="hourUp" type="button">⌃</button>
+        <div class="ghost" id="hourPrev"></div>
+        <div class="timevalue" id="hourVal">10</div>
+        <div class="ghost" id="hourNext"></div>
+        <button class="arrow" id="hourDown" type="button">⌄</button>
+      </div>
+      <div class="colon">:</div>
+      <div class="timecol">
+        <button class="arrow" id="minUp" type="button">⌃</button>
+        <div class="ghost" id="minPrev"></div>
+        <div class="timevalue" id="minVal">30</div>
+        <div class="ghost" id="minNext"></div>
+        <button class="arrow" id="minDown" type="button">⌄</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="fieldhead"><div class="label">✎ 予定の内容</div><button class="voice" id="voiceBtn" type="button">🎙 音声入力</button></div>
+    <input id="textInput" class="textinput" placeholder="例：病院へ行く">
+    <div class="setting"><div class="left">🔔 通知</div><div><select id="notifySel"><option value="0">時間になったら</option><option value="30" selected>30分前</option><option value="60">1時間前</option><option value="180">3時間前</option></select> ›</div></div>
+    <div class="setting"><div class="left">↻ 繰り返し</div><div><select id="repeatSel"><option>しない</option><option>毎日</option><option>毎週</option></select> ›</div></div>
+    <div class="setting"><div class="left">📝 メモ</div><div><button class="smallbtn" id="memoToggle" type="button">メモを追加</button></div></div>
+    <textarea id="memoArea" class="memoarea hidden" placeholder="メモを入力"></textarea>
+  </div>
+
+  <button class="register" id="saveBtn" type="button">📅 この予定を登録する</button>
+  <button class="cancel" id="cancelBtn" type="button">⊗ キャンセル</button>
+</section>
+
+<section id="homeView" class="hidden">
+  <div class="card"><div class="cardtitle"><span id="homeTitle">今日の予定</span><span id="countBadge"></span></div><div id="eventList"></div></div>
+</section>
+<section id="weekView" class="hidden"><div class="card"><div class="viewtitle">週表示</div><div id="weekList"></div></div></section>
+<section id="doneView" class="hidden"><div class="card"><div class="viewtitle">完了した予定</div><div id="doneList"></div></div></section>
+<section id="calView" class="hidden"><div class="card"><div class="viewtitle" id="calTitle">カレンダー</div><div class="calendargrid" id="calendarGrid"></div></div></section>
+</div>
+
+<nav class="bottom">
+  <button class="nav" id="navHome" type="button"><span>⌂</span>今日の予定</button>
+  <button class="nav" id="navWeek" type="button"><span>☷</span>週表示</button>
+  <button class="fab" id="navAdd" type="button">＋</button>
+  <button class="nav" id="navDone" type="button"><span>☑</span>完了した予定</button>
+  <button class="nav" id="navCal" type="button"><span>▣</span>カレンダー</button>
+</nav>
+
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id), pad=n=>String(n).padStart(2,"0"), KEY="yoteiNavi_v22_final";
+const DOW=["日","月","火","水","木","金","土"];
+let selected=new Date(), hour=10, minute=30, view="add";
+
+function keyOf(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function parseKey(k){const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)}
+function sameDay(a,b){return keyOf(a)===keyOf(b)}
+function fmtDate(d){return `${d.getMonth()+1}月${d.getDate()}日（${DOW[d.getDay()]}）`}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(_){return []}}
+function save(v){localStorage.setItem(KEY,JSON.stringify(v))}
+function esc(s){const x=document.createElement("div");x.textContent=s;return x.innerHTML}
+function greet(){const h=new Date().getHours();return h<11?"おはようございます！ 良い一日になりますように。":h<18?"こんにちは！ 今日も良い一日を。":"こんばんは。今日もお疲れさまでした。"}
+function applies(e,d){if(e.done)return false;if(e.repeat==="しない")return e.date===keyOf(d);const b=parseKey(e.date),t=new Date(d.getFullYear(),d.getMonth(),d.getDate());if(t<b)return false;return e.repeat==="毎日"||(e.repeat==="毎週"&&t.getDay()===b.getDay())}
+function eventsFor(d){return load().filter(e=>applies(e,d)).sort((a,b)=>a.hour*60+a.minute-b.hour*60-b.minute)}
+
+function renderHeader(){
+  $("dateBig").textContent=fmtDate(selected); $("greeting").textContent=greet();
+  const box=$("week"); box.innerHTML="";
+  const start=new Date(selected); start.setDate(selected.getDate()-3);
+  for(let i=0;i<14;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const b=document.createElement("button"); b.type="button"; b.className="day";
+    if(d.getDay()===0)b.classList.add("sun"); if(d.getDay()===6)b.classList.add("sat"); if(sameDay(d,selected))b.classList.add("active");
+    b.innerHTML=`<span class="dow">${DOW[d.getDay()]}</span><strong>${d.getDate()}</strong><small>${sameDay(d,new Date())?"今日":""}</small>`;
+    b.onclick=()=>{selected=new Date(d);renderAll();show("home")}; box.appendChild(b);
+  }
+  requestAnimationFrame(()=>{const a=box.querySelector(".active");if(a)a.scrollIntoView({inline:"center",block:"nearest"})});
+}
+function updateTime(){
+  $("hourVal").textContent=pad(hour); $("hourPrev").textContent=pad((hour+23)%24); $("hourNext").textContent=pad((hour+1)%24);
+  $("minVal").textContent=pad(minute); $("minPrev").textContent=pad((minute+55)%60); $("minNext").textContent=pad((minute+5)%60);
+}
+function setNow(){const n=new Date();hour=n.getHours();minute=Math.round(n.getMinutes()/5)*5;if(minute===60){minute=0;hour=(hour+1)%24}updateTime()}
+function show(name){
+  view=name;
+  ["add","home","week","done","cal"].forEach(v=>$(v+"View").classList.toggle("hidden",v!==name));
+  [["navHome","home"],["navWeek","week"],["navDone","done"],["navCal","cal"]].forEach(([id,v])=>$(id).classList.toggle("active",v===name));
+  if(name==="home")renderHome(); if(name==="week")renderWeek(); if(name==="done")renderDone(); if(name==="cal")renderCal();
+}
+function notice(e){
+  if(!sameDay(selected,new Date()))return "";
+  const now=new Date(), t=new Date(); t.setHours(e.hour,e.minute,0,0); const diff=Math.round((t-now)/60000);
+  if(diff>0&&diff<=30)return `<div class="notice red">🔔 まもなく予定の時間です！<br>${pad(e.hour)}:${pad(e.minute)}　${esc(e.text)}</div>`;
+  if(diff>30&&diff<=180)return `<div class="notice orange">◷ この予定まであと ${Math.floor(diff/60)}時間 ${diff%60}分です<br>${pad(e.hour)}:${pad(e.minute)}　${esc(e.text)}</div>`;
+  return "";
+}
+function addEvent(){
+  const text=$("textInput").value.trim();
+  if(!text){alert("予定の内容を入力してください");return}
+  const arr=load();
+  arr.push({id:Date.now(),date:keyOf(selected),hour,minute,text,notify:Number($("notifySel").value),repeat:$("repeatSel").value,memo:$("memoArea").value.trim(),done:false});
+  save(arr); $("textInput").value=""; $("memoArea").value=""; $("memoArea").classList.add("hidden"); show("home"); renderAll();
+}
+function renderHome(){
+  const ev=eventsFor(selected), list=$("eventList");
+  $("homeTitle").textContent=sameDay(selected,new Date())?"今日の予定":`${selected.getMonth()+1}月${selected.getDate()}日の予定`;
+  $("countBadge").textContent=ev.length?`${ev.length}件`:"";
+  if(!ev.length){list.innerHTML='<div class="empty">予定はありません</div>';return}
+  list.innerHTML=ev.map(e=>`<div class="event"><div class="evtime">${pad(e.hour)}:${pad(e.minute)}</div><div class="evtext">${esc(e.text)}</div><div class="evmeta">通知：${e.notify===0?"時間になったら":e.notify+"分前"}／繰り返し：${esc(e.repeat)}</div><div class="actions"><button class="mini" data-done="${e.id}">✓ 完了</button><button class="mini" data-del="${e.id}">削除</button></div></div>${notice(e)}`).join("");
+  list.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>{save(load().map(e=>e.id===Number(b.dataset.done)?{...e,done:true}:e));renderAll()});
+  list.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(confirm("削除しますか？")){save(load().filter(e=>e.id!==Number(b.dataset.del)));renderAll()}});
+}
+function renderWeek(){
+  const root=$("weekList"); root.innerHTML="";
+  for(let i=0;i<7;i++){
+    const d=new Date(selected); d.setDate(selected.getDate()+i); const ev=eventsFor(d);
+    root.innerHTML+=`<div class="event"><b>${fmtDate(d)}</b>${ev.length?ev.map(e=>`<div style="margin-top:6px">${pad(e.hour)}:${pad(e.minute)}　${esc(e.text)}</div>`).join(""):'<div class="empty">予定なし</div>'}</div>`;
+  }
+}
+function renderDone(){
+  const root=$("doneList"),ev=load().filter(e=>e.done);
+  root.innerHTML=ev.length?ev.map(e=>`<div class="event"><div class="evtime">${e.date} ${pad(e.hour)}:${pad(e.minute)}</div><div class="evtext">${esc(e.text)}</div></div>`).join(""):'<div class="empty">完了した予定はありません</div>';
+}
+function renderCal(){
+  const root=$("calendarGrid"); root.innerHTML=""; $("calTitle").textContent=`${selected.getFullYear()}年${selected.getMonth()+1}月`;
+  const first=new Date(selected.getFullYear(),selected.getMonth(),1),start=new Date(first); start.setDate(1-first.getDay());
+  for(let i=0;i<42;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const c=document.createElement("button"); c.type="button"; c.className="calcell";
+    if(sameDay(d,new Date()))c.classList.add("today"); if(sameDay(d,selected))c.classList.add("sel");
+    c.innerHTML=`${d.getDate()}${eventsFor(d).length?'<span class="dot"></span>':""}`;
+    c.onclick=()=>{selected=new Date(d);renderAll();show("home")}; root.appendChild(c);
+  }
+}
+function renderAll(){renderHeader();if(view==="home")renderHome();if(view==="week")renderWeek();if(view==="done")renderDone();if(view==="cal")renderCal()}
+function voice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$("textInput").focus();alert("キーボードのマイクをご利用ください。");return}const r=new SR();r.lang="ja-JP";r.onresult=e=>{$("textInput").value=e.results[0][0].transcript};r.start()}
+
+$("hourUp").onclick=()=>{hour=(hour+1)%24;updateTime()};
+$("hourDown").onclick=()=>{hour=(hour+23)%24;updateTime()};
+$("minUp").onclick=()=>{minute+=5;if(minute>=60){minute=0;hour=(hour+1)%24}updateTime()};
+$("minDown").onclick=()=>{minute-=5;if(minute<0){minute=55;hour=(hour+23)%24}updateTime()};
+$("nowBtn").onclick=setNow;
+$("saveBtn").onclick=addEvent;
+$("cancelBtn").onclick=()=>show("home");
+$("memoToggle").onclick=()=>$("memoArea").classList.toggle("hidden");
+$("voiceBtn").onclick=voice;
+$("navAdd").onclick=()=>show("add");
+$("navHome").onclick=()=>show("home");
+$("navWeek").onclick=()=>show("week");
+$("navDone").onclick=()=>show("done");
+$("navCal").onclick=()=>show("cal");
+$("todayBtn").onclick=()=>{selected=new Date();renderAll();show("home")};
+$("menuBtn").onclick=()=>alert("予定ナビ Ver.2.2");
+$("settingsBtn").onclick=()=>alert("設定");
+renderHeader();updateTime();show("add");
+})();
+</script>
+</body>
+</html>
